@@ -407,7 +407,8 @@ containing the absolute value of each element in `x`. For example, if x is
 an input element and y is an output element, this operation computes
 \\(y = |x|\\).
 
-See [`tf.complex_abs()`](#tf_complex_abs) to compute the absolute value of a complex
+See [`tf.complex_abs()`](#tf_complex_abs) to compute the absolute value of a
+complex
 number.
 
 ##### Args:
@@ -469,21 +470,7 @@ Returns the truth value of x AND y element-wise.
 
 #### `tf.Variable.__div__(a, *args)` {#Variable.__div__}
 
-Returns x / y element-wise.
 
-*NOTE*: `Div` supports broadcasting. More about broadcasting
-[here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
-
-##### Args:
-
-
-*  <b>`x`</b>: A `Tensor`. Must be one of the following types: `half`, `float32`, `float64`, `uint8`, `int8`, `uint16`, `int16`, `int32`, `int64`, `complex64`, `complex128`.
-*  <b>`y`</b>: A `Tensor`. Must have the same type as `x`.
-*  <b>`name`</b>: A name for the operation (optional).
-
-##### Returns:
-
-  A `Tensor`. Has the same type as `x`.
 
 
 - - -
@@ -693,9 +680,12 @@ Returns the truth value of (x < y) element-wise.
 
 #### `tf.Variable.__mod__(a, *args)` {#Variable.__mod__}
 
-Returns element-wise remainder of division.
+Returns element-wise remainder of division. When `x < 0` xor `y < 0` is
 
-*NOTE*: `Mod` supports broadcasting. More about broadcasting
+true, this follows Python semantics in that the result here is consistent
+with a flooring divide. E.g. `floor(x / y) * y + mod(x, y) = x`.
+
+*NOTE*: `FloorMod` supports broadcasting. More about broadcasting
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 
 ##### Args:
@@ -832,21 +822,7 @@ Returns the truth value of x AND y element-wise.
 
 #### `tf.Variable.__rdiv__(a, *args)` {#Variable.__rdiv__}
 
-Returns x / y element-wise.
 
-*NOTE*: `Div` supports broadcasting. More about broadcasting
-[here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
-
-##### Args:
-
-
-*  <b>`x`</b>: A `Tensor`. Must be one of the following types: `half`, `float32`, `float64`, `uint8`, `int8`, `uint16`, `int16`, `int32`, `int64`, `complex64`, `complex128`.
-*  <b>`y`</b>: A `Tensor`. Must have the same type as `x`.
-*  <b>`name`</b>: A name for the operation (optional).
-
-##### Returns:
-
-  A `Tensor`. Has the same type as `x`.
 
 
 - - -
@@ -888,9 +864,12 @@ as well.
 
 #### `tf.Variable.__rmod__(a, *args)` {#Variable.__rmod__}
 
-Returns element-wise remainder of division.
+Returns element-wise remainder of division. When `x < 0` xor `y < 0` is
 
-*NOTE*: `Mod` supports broadcasting. More about broadcasting
+true, this follows Python semantics in that the result here is consistent
+with a flooring divide. E.g. `floor(x / y) * y + mod(x, y) = x`.
+
+*NOTE*: `FloorMod` supports broadcasting. More about broadcasting
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 
 ##### Args:
@@ -1118,21 +1097,28 @@ the variable.
 
 - - -
 
-#### `tf.Variable.ref()` {#Variable.ref}
+#### `tf.Variable.read_value()` {#Variable.read_value}
 
-Returns a reference to this variable.
+Returns the value of this variable, read in the current context.
 
-You usually do not need to call this method as all ops that need a reference
-to the variable call it automatically.
-
-Returns is a `Tensor` which holds a reference to the variable.  You can
-assign a new value to the variable by passing the tensor to an assign op.
-See [`value()`](#Variable.value) if you want to get the value of the
-variable.
+Can be different from value() if it's on another device, with control
+dependencies, etc.
 
 ##### Returns:
 
-  A `Tensor` that is a reference to the variable.
+  A `Tensor` containing the value of the variable.
+
+
+- - -
+
+#### `tf.Variable.set_shape(shape)` {#Variable.set_shape}
+
+Overrides the shape for this variable.
+
+##### Args:
+
+
+*  <b>`shape`</b>: the `TensorShape` representing the overridden shape.
 
 
 - - -
@@ -1163,8 +1149,6 @@ of the variable call it automatically through a `convert_to_tensor()` call.
 
 Returns a `Tensor` which holds the value of the variable.  You can not
 assign a new value to this tensor as it is not a reference to the variable.
-See [`ref()`](#Variable.ref) if you want to get a reference to the
-variable.
 
 To avoid copies, if the consumer of the returned value is on the same device
 as the variable, this actually returns the live value of the variable, not
@@ -2619,6 +2603,41 @@ An adaptor for zeros() to match the Initializer spec.
 ### `tf.ones_initializer(dtype=tf.float32, partition_info=None)` {#ones_initializer}
 
 An adaptor for ones() to match the Initializer spec.
+
+
+- - -
+
+### `tf.orthogonal_initializer(gain=1.0, dtype=tf.float32, seed=None)` {#orthogonal_initializer}
+
+Returns an initializer that generates an orthogonal matrix or a reshaped 
+orthogonal matrix.
+
+If the shape of the tensor to initialize is two-dimensional, i is initialized
+with an orthogonal matrix obtained from the singular value decomposition of a
+matrix of uniform random numbers.
+
+If the shape of the tensor to initialize is more than two-dimensional, a matrix
+of shape `(shape[0] * ... * shape[n - 2], shape[n - 1])` is initialized, where
+`n` is the length of the shape vector. The matrix is subsequently reshaped to
+give a tensor of the desired shape.
+
+##### Args:
+
+
+*  <b>`gain`</b>: multiplicative factor to apply to the orthogonal matrix
+*  <b>`dtype`</b>: The type of the output.
+*  <b>`seed`</b>: A Python integer. Used to create random seeds. See
+    [`set_random_seed`](../../api_docs/python/constant_op.md#set_random_seed)
+    for behavior.
+
+##### Returns:
+
+  An initializer that generates orthogonal tensors
+
+##### Raises:
+
+
+*  <b>`ValueError`</b>: if `dtype` is not a floating point type or if `shape` has fewer than two entries.
 
 
 

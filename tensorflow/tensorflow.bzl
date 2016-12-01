@@ -41,10 +41,12 @@ def check_version(bazel_version):
 load(
     "//tensorflow/core:platform/default/build_config_root.bzl",
     "tf_cuda_tests_tags",
+    "tf_sycl_tests_tags",
 )
 load(
     "@local_config_cuda//cuda:build_defs.bzl",
     "if_cuda",
+    "cuda_path_flags"
 )
 
 # List of proto files for android builds
@@ -164,6 +166,9 @@ def tf_copts():
               "//tensorflow:windows": [
                 "/DLANG_CXX11",
                 "/D__VERSION__=\\\"MSVC\\\"",
+                "/DPLATFORM_WINDOWS",
+                "/DEIGEN_HAS_C99_MATH",
+                "/DTENSORFLOW_USE_EIGEN_THREADPOOL",
               ],
               "//tensorflow:ios": ["-std=c++11"],
               "//conditions:default": ["-pthread"]}))
@@ -424,7 +429,6 @@ def _cuda_copts():
             common_cuda_opts +
             [
                 "-fcuda-flush-denormals-to-zero",
-                "--cuda-path=external/local_config_cuda/cuda",
                 "--cuda-gpu-arch=sm_35",
             ]
         ),
@@ -433,7 +437,7 @@ def _cuda_copts():
         # optimizations are not enabled at O2.
         "@local_config_cuda//cuda:using_clang_opt": ["-O3"],
         "//conditions:default": [],
-    })
+    }) + cuda_path_flags()
 
 # Build defs for TensorFlow kernels
 
@@ -442,7 +446,7 @@ def _cuda_copts():
 # libraries needed by GPU kernels.
 def tf_gpu_kernel_library(srcs, copts=[], cuda_copts=[], deps=[], hdrs=[],
                           **kwargs):
-  copts = copts + _cuda_copts() + if_cuda(cuda_copts)
+  copts = copts + _cuda_copts() + if_cuda(cuda_copts) + tf_copts()
 
   native.cc_library(
       srcs = srcs,
@@ -479,12 +483,15 @@ def tf_cuda_library(deps=None, cuda_deps=None, copts=None, **kwargs):
     copts = []
 
   native.cc_library(
-      deps = deps + if_cuda(cuda_deps + ["//tensorflow/core:cuda"]),
+      deps = deps + if_cuda(cuda_deps + [
+          "//tensorflow/core:cuda",
+          "@local_config_cuda//cuda:cuda_headers"
+      ]),
       copts = copts + if_cuda(["-DGOOGLE_CUDA=1"]),
       **kwargs)
 
 def tf_kernel_library(name, prefix=None, srcs=None, gpu_srcs=None, hdrs=None,
-                      deps=None, alwayslink=1, **kwargs):
+                      deps=None, alwayslink=1, copts=tf_copts(), **kwargs):
   """A rule to build a TensorFlow OpKernel.
 
   May either specify srcs/hdrs or prefix.  Similar to tf_cuda_library,
@@ -538,7 +545,7 @@ def tf_kernel_library(name, prefix=None, srcs=None, gpu_srcs=None, hdrs=None,
       name = name,
       srcs = srcs,
       hdrs = hdrs,
-      copts = tf_copts(),
+      copts = copts,
       cuda_deps = cuda_deps,
       linkstatic = 1,   # Needed since alwayslink is broken in bazel b/27630669
       alwayslink = alwayslink,
@@ -885,6 +892,20 @@ def cuda_py_test(name, srcs, size="medium", data=[], main=None, args=[],
              shard_count=shard_count,
              additional_deps=additional_deps,
              flaky=flaky)
+
+def sycl_py_test(name, srcs, size="medium", data=[], main=None, args=[],
+                shard_count=1, additional_deps=[], tags=[], flaky=0):
+ test_tags = tags + tf_sycl_tests_tags()
+ tf_py_test(name=name,
+            size=size,
+            srcs=srcs,
+            data=data,
+            main=main,
+            args=args,
+            tags=test_tags,
+            shard_count=shard_count,
+            additional_deps=additional_deps,
+            flaky=flaky)
 
 def py_tests(name,
              srcs,

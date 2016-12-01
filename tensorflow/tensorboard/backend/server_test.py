@@ -408,6 +408,9 @@ class TensorboardServerTest(tf.test.TestCase):
     # Write a projector config file in run1.
     config_path = os.path.join(run_path, 'projector_config.pbtxt')
     config = ProjectorConfig()
+    embedding = config.embeddings.add()
+    # Add an embedding by its canonical tensor name.
+    embedding.tensor_name = 'var1:0'
     config_pbtxt = text_format.MessageToString(config)
     with tf.gfile.GFile(config_path, 'w') as f:
       f.write(config_pbtxt)
@@ -460,6 +463,11 @@ class ParseEventFilesSpecTest(tf.test.TestCase):
   def testRespectsGCSPath(self):
     logdir_string = 'gs://foo/path'
     expected = {'gs://foo/path': None}
+    self.assertEqual(server.ParseEventFilesSpec(logdir_string), expected)
+
+  def testRespectsHDFSPath(self):
+    logdir_string = 'hdfs://foo/path'
+    expected = {'hdfs://foo/path': None}
     self.assertEqual(server.ParseEventFilesSpec(logdir_string), expected)
 
   def testDoesNotExpandUserInGCSPath(self):
