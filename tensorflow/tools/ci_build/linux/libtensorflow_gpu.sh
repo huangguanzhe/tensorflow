@@ -14,8 +14,9 @@
 # limitations under the License.
 # ==============================================================================
 #
-# Script to build a binary release tarball for the TensorFlow C-library for
-# machines with GPUs.
+# Script to build a binary release tarball for the TensorFlow C-library without
+# GPU support.
+
 set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export TF_NEED_CUDA=1

@@ -452,7 +452,7 @@ then compares them using self._AssertProtoEqual().
 
 - - -
 
-#### `tf.test.TestCase.assertProtoEqualsVersion(expected, actual, producer=17, min_consumer=0)` {#TestCase.assertProtoEqualsVersion}
+#### `tf.test.TestCase.assertProtoEqualsVersion(expected, actual, producer=21, min_consumer=0)` {#TestCase.assertProtoEqualsVersion}
 
 
 
@@ -751,7 +751,15 @@ Fail immediately, with the given message.
 
 #### `tf.test.TestCase.get_temp_dir()` {#TestCase.get_temp_dir}
 
+Returns a unique temporary directory for the test to use.
 
+Across different test runs, this method will return a different folder.
+This will ensure that across different runs tests will not be able to
+pollute each others environment.
+
+##### Returns:
+
+  string, the path to the unique temporary directory created for this test.
 
 
 - - -
@@ -821,6 +829,13 @@ Hook method for deconstructing the class fixture after running all tests in the 
 Returns a TensorFlow Session for use in executing tests.
 
 This method should be used for all functional tests.
+
+This method behaves different than session.Session: for performance reasons
+`test_session` will by default (if `graph` is None) reuse the same session
+across tests. This means you may want to either call the function
+`reset_default_graph()` before tests, or if creating an explicit new graph,
+pass it here (simply setting it with `as_default()` won't do it), which will
+trigger the creation of a new session.
 
 Use the `use_gpu` and `force_gpu` options to control where ops are run. If
 `force_gpu` is True, all ops are pinned to `/gpu:0`. Otherwise, if `use_gpu`

@@ -54,8 +54,8 @@ What we will accomplish in this tutorial:
 - Create a function that is a model for recognizing digits, based on looking at
   every pixel in the image
 
-- Use Tensorflow to train the model to recognize digits by having it "look" at
-  thousands of examples (and run our first Tensorflow session to do so)
+- Use TensorFlow to train the model to recognize digits by having it "look" at
+  thousands of examples (and run our first TensorFlow session to do so)
 
 - Check the model's accuracy with our test data
 
@@ -223,7 +223,7 @@ More compactly, we can just write:
 
 $$y = \text{softmax}(Wx + b)$$
 
-Now let's turn that into something that Tensorflow can use.
+Now let's turn that into something that TensorFlow can use.
 
 ## Implementing the Regression
 
@@ -376,21 +376,19 @@ to your graph which implement backpropagation and gradient descent. Then it
 gives you back a single operation which, when run, does a step of gradient
 descent training, slightly tweaking your variables to reduce the loss.
 
-Now we have our model set up to train. One last thing before we launch it, we
-have to create an operation to initialize the variables we created. Note that
-this defines the operation but does not run it yet:
+
+We can now launch the model in an `InteractiveSession`:
 
 ```python
-init = tf.global_variables_initializer()
+sess = tf.InteractiveSession()
 ```
 
-We can now launch the model in a `Session`, and now we run the operation that
-initializes the variables:
+We first have to create an operation to initialize the variables we created:
 
 ```python
-sess = tf.Session()
-sess.run(init)
+tf.global_variables_initializer().run()
 ```
+
 
 Let's train -- we'll run the training step 1000 times!
 

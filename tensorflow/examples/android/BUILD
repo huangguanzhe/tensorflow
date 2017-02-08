@@ -5,7 +5,11 @@ package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])  # Apache 2.0
 
-load("//tensorflow:tensorflow.bzl", "tf_copts")
+load(
+    "//tensorflow:tensorflow.bzl",
+    "tf_copts",
+    "tf_opts_nortti_if_android",
+)
 
 exports_files(["LICENSE"])
 
@@ -60,6 +64,8 @@ android_binary(
     assets = [
         "//tensorflow/examples/android/assets:asset_files",
         "@inception5h//:model_files",
+        "@mobile_multibox//:model_files",
+        "@stylize//:model_files",
     ],
     assets_dir = "",
     custom_package = "org.tensorflow.demo",

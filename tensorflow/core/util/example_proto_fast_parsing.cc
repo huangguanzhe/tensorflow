@@ -501,7 +501,7 @@ Status FastParseSerializedExample(
       }
       Tensor& out = (*output_dense)[d];
 
-      const std::size_t num_elements = config.dense[d].shape.num_elements();
+      const std::size_t num_elements = config.dense[d].elements_per_stride;
       const std::size_t offset = example_index * num_elements;
 
       auto shape_error = [&](size_t size, StringPiece type_str) {
@@ -606,11 +606,11 @@ Status FastParseSerializedExample(
   for (size_t d = 0; d < config.dense.size(); ++d) {
     if (dense_feature_last_example[d] == example_index) continue;
     if (config.dense[d].default_value.NumElements() == 0) {
-      return errors::InvalidArgument("Name: ", example_name, ", Feature: ",
-                                     config.dense[d].feature_name,
-                                     " is required but could not be found.");
+      return errors::InvalidArgument(
+          "Name: ", example_name, ", Feature: ", config.dense[d].feature_name,
+          " (data type: ", DataTypeString(config.dense[d].dtype), ")",
+          " is required but could not be found.");
     }
-
     const Tensor& in = config.dense[d].default_value;
     Tensor& out = (*output_dense)[d];
     const std::size_t num_elements = in.shape().num_elements();

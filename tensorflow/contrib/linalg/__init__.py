@@ -30,6 +30,15 @@ Subclasses of `LinearOperator` provide a access to common methods on a
 ### Individual operators
 
 @@LinearOperatorDiag
+@@LinearOperatorIdentity
+@@LinearOperatorScaledIdentity
+@@LinearOperatorMatrix
+@@LinearOperatorTriL
+@@LinearOperatorUDVHUpdate
+
+### Transformations and Combinations of operators
+
+@@LinearOperatorComposition
 
 """
 from __future__ import absolute_import
@@ -39,6 +48,14 @@ from __future__ import print_function
 # pylint: disable=unused-import,wildcard-import,line-too-long,g-importing-member
 
 from tensorflow.contrib.linalg.python.ops.linear_operator import *
+from tensorflow.contrib.linalg.python.ops.linear_operator_composition import *
 from tensorflow.contrib.linalg.python.ops.linear_operator_diag import *
+from tensorflow.contrib.linalg.python.ops.linear_operator_identity import *
+from tensorflow.contrib.linalg.python.ops.linear_operator_matrix import *
+from tensorflow.contrib.linalg.python.ops.linear_operator_tril import *
+from tensorflow.contrib.linalg.python.ops.linear_operator_udvh_update import *
 
 # pylint: enable=unused-import,wildcard-import,line-too-long,g-importing-member
+
+from tensorflow.python.util.all_util import remove_undocumented
+remove_undocumented(__name__)

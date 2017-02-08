@@ -58,6 +58,13 @@ cc_library(
 )
 
 cc_library(
+    name = "cuda_driver",
+    srcs = ["lib/%{cuda_driver_lib}"],
+    includes = ["include/"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
     name = "cudart",
     srcs = ["lib/%{cudart_lib}"],
     data = ["lib/%{cudart_lib}"],
@@ -130,5 +137,11 @@ cc_library(
 cc_library(
     name = "cupti_dsos",
     data = ["lib/%{cupti_lib}"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "libdevice_root",
+    data = glob(["nvvm/libdevice/*.bc"]),
     visibility = ["//visibility:public"],
 )

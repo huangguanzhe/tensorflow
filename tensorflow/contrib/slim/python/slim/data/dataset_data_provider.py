@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,13 +50,21 @@ from tensorflow.contrib.slim.python.slim.data import parallel_reader
 
 class DatasetDataProvider(data_provider.DataProvider):
 
-  def __init__(self, dataset, num_readers=1, shuffle=True, num_epochs=None,
-               common_queue_capacity=256, common_queue_min=128, seed=None):
+  def __init__(self,
+               dataset,
+               num_readers=1,
+               reader_kwargs=None,
+               shuffle=True,
+               num_epochs=None,
+               common_queue_capacity=256,
+               common_queue_min=128,
+               seed=None):
     """Creates a DatasetDataProvider.
 
     Args:
       dataset: An instance of the Dataset class.
       num_readers: The number of parallel readers to use.
+      reader_kwargs: An optional dict of kwargs for the reader.
       shuffle: Whether to shuffle the data sources and common queue when
         reading.
       num_epochs: The number of times each data source is read. If left as None,
@@ -71,6 +79,7 @@ class DatasetDataProvider(data_provider.DataProvider):
         reader_class=dataset.reader,
         num_epochs=num_epochs,
         num_readers=num_readers,
+        reader_kwargs=reader_kwargs,
         shuffle=shuffle,
         capacity=common_queue_capacity,
         min_after_dequeue=common_queue_min,

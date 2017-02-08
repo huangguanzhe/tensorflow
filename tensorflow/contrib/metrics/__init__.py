@@ -109,6 +109,7 @@ labels and predictions tensors and results in a weighted average of the metric.
 @@streaming_mean_iou
 @@streaming_mean_relative_error
 @@streaming_mean_squared_error
+@@streaming_mean_tensor
 @@streaming_root_mean_squared_error
 @@streaming_covariance
 @@streaming_pearson_correlation
@@ -133,10 +134,11 @@ labels and predictions tensors and results in a weighted average of the metric.
 @@auc_using_histogram
 
 @@accuracy
-@@confusion_matrix
 
 @@aggregate_metrics
 @@aggregate_metric_map
+
+@@confusion_matrix
 
 ## Set `Ops`
 
@@ -194,7 +196,7 @@ from tensorflow.contrib.metrics.python.ops.set_ops import set_difference
 from tensorflow.contrib.metrics.python.ops.set_ops import set_intersection
 from tensorflow.contrib.metrics.python.ops.set_ops import set_size
 from tensorflow.contrib.metrics.python.ops.set_ops import set_union
-from tensorflow.python.util.all_util import make_all
 # pylint: enable=unused-import,line-too-long
 
-__all__ = make_all(__name__)
+from tensorflow.python.util.all_util import remove_undocumented
+remove_undocumented(__name__)
